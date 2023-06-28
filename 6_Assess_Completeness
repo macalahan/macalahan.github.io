@@ -1,0 +1,65 @@
+# Assembly Quality Control and Annotation
+
+## Step 1: Busco
+Busco is a software that assesses genome completeness based on evolutionarily-informed expectations of gene content of near-universal single-copy orthologs by searching for these select sets of orthologous genes. There are several databases that can be used with Busco, and can be downloaded [here](https://busco.ezlab.org).
+
+Busco can be run with or without internet, so we will consider two ways to run this software:
+
+#### Option 1:
+For option 1, we will assume that you have internet connection on the node you are running your job on. 
+Note: Busco does not have the ability to direct an output file to a different folder than the folder you submit the job from, even with a path identified. In this case, consider creating a Busco folder.
+```Bash
+#make directory / folder
+mkdir Busco
+#
+#change directory to your Busco folder
+cd Busco
+```
+Be sure that it is available and loaded on your HPC, and write and submit a job with the following code:
+```Bash
+echo + `date` job $JOB_NAME started in $QUEUE with jobID=$JOB_ID on $HOSTNAME
+echo + NSLOTS = $NSLOTS
+#
+busco  -o output_file -i /path/to/input/fasta/file.fasta -l mammalia_odb10 -c $NSLOTS -m genome
+#
+echo = `date` job $JOB_NAME done
+#
+#Explanation:
+#-o: name of the output folder and files
+#-i: input file (FASTA)
+#-l: lineage - ex. mammalian / name of the database (This will automatically connected and download the database from the BUSCO website)
+#-c: number of CPUs
+#-m: mode (options are *genome*, transcriptome, proteins)
+```
+
+#### Option 2:
+If you do not have internet connection on the node you are running the software on, you can download the database and run the program offline. 
+```Bash
+#make directory / folder
+mkdir Busco
+#
+#change directory to your Busco folder
+cd Busco
+#
+#download database from web, ex. mammal database
+wget https://busco-data.ezlab.org/v5/data/lineages/mammalia_odb10.2021-02-19.tar.gz
+#
+#extract files within Busco folder
+tar -zxf mammalia_odb10.2021-02-19.tar.gz
+```
+Write and submit a job with the following code:
+```Bash
+echo + `date` job $JOB_NAME started in $QUEUE with jobID=$JOB_ID on $HOSTNAME
+echo + NSLOTS = $NSLOTS
+#
+busco  -o output_file -i /path/to/input/fasta/file.fasta -l mammalia_odb10 -c $NSLOTS -m genome --offline --download_path /path/to/datasets
+#
+echo = `date` job $JOB_NAME done
+#
+#Explanation:
+#-o: name of the output folder and files
+#-i: input file (FASTA)
+#-l: lineage - ex. mammalian / name of the database (This will automatically connected and download the database from the BUSCO website)
+#-c: number of CPUs
+#-m: mode (options are *genome*, transcriptome, proteins)
+```
