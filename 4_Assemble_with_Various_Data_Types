@@ -1,0 +1,48 @@
+# Genome Assembly and Statistics
+
+## Step 4: Hifiasm
+Hifiasm is a fast haplotype-resolved de novo assembler for PacBio HiFi reads. Hifiasm can use trio (offspring + parent 1 + parent 2 data), short reads data, or Hi-C data to produce haplotype-resolved assemblies. For more information, or to install, visit [Hifiasm](https://hifiasm.readthedocs.io/en/latest/). Apply Hifiasm in the following steps:
+##### 1) First, assemble with only HiFi data, if applicable
+##### 2) Next, assemble with both HiFi and Hi-C data, if applicable
+##### 3) Convert to fasta file
+
+------
+### 1) Assemble with only HiFi data
+Write and submit a job script with the following code:
+```Bash
+echo + `date` job $JOB_NAME started in $QUEUE with jobID=$JOB_ID on $HOSTNAME
+#
+hifiasm -o output_file.asm -t 32 --h1 hifi_read1.fastq.gz --h2 hifi_read2.fastq.gz additional_pacbio_or_hifi_files_if_applicable.fastq.gz
+#
+echo = `date` job $JOB_NAME done
+#
+#Explanation
+#-o: name and path of the output file in asm format
+#-t: sets the number of CPUs in use
+#Input sequences should be FASTA or FASTQ format, uncompressed or compressed with gzip (.gz). The quality scores of reads in FASTQ are ignored by hifiasm. Hifiasm outputs assemblies in `GFA <https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md>`_ format.
+```
+
+------
+### 2) Assembly with Hifi and Hi-C data
+Write and submit a job script with the following code:
+```Bash
+echo + `date` job $JOB_NAME started in $QUEUE with jobID=$JOB_ID on $HOSTNAME
+#
+hifiasm -o output_file.asm -t32 --h1 hi_c_read1.fq.gz --h2 hi_c_read2.fq.gz hifi_file.fq.gz
+#
+echo = `date` job $JOB_NAME done
+#
+#Explanation
+#-o: name and path of the output file in asm format
+#-t: sets the number of CPUs in use
+#--h1: path to read 1 of Hi_C data
+#--h2: path to read 2 of Hi_C data
+#Input sequences should be FASTA or FASTQ format, uncompressed or compressed with gzip (.gz). The quality scores of reads in FASTQ are ignored by hifiasm. Hifiasm outputs assemblies in `GFA <https://github.com/pmelsted/GFA-spec/blob/master/GFA-spec.md>`_ format.
+```
+
+------
+### 3) Convert to fasta files
+The following can be done in a computational or interactive node, or submitted as a job script.
+
+```Bash
+#once
